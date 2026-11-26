@@ -151,15 +151,21 @@ dialog::backdrop{background:rgba(20,28,40,.45)}
 .rp .st h3{font-size:14px;margin:0 0 2px}
 .rp .st .eqline{font-size:15px;padding:2px 0;overflow:visible}
 .rp h2{break-after:avoid}
-.rp .fform{display:grid;gap:10px}
+.rp .fform{display:grid;gap:12px;background:#d5f0df;border:1px solid #9fd6b7;border-radius:10px;padding:14px 16px}
 .rp .fgrp{break-inside:avoid}
-.rp .fgrp h4{font:600 14px "Barlow Semi Condensed",Barlow,sans-serif;margin:0 0 4px}
-.rp .fg{display:grid;grid-template-columns:1fr 1fr;gap:6px 16px}
-.rp .fl{display:flex;justify-content:space-between;gap:8px;font:500 12.5px "Barlow Semi Condensed",Barlow,sans-serif;margin-bottom:2px}
-.rp .fl i{font-style:normal;color:#555}
-.rp .fv{display:flex;justify-content:space-between;align-items:center;gap:8px;border:1px solid #b9c3cf;border-radius:6px;padding:4px 10px;min-height:28px;font-size:13.5px}
+.rp .fgrp h4{font:600 15px "Barlow Semi Condensed",Barlow,sans-serif;margin:0 0 6px;color:#1d2733}
+.rp .fg{display:grid;grid-template-columns:1fr 1fr;gap:8px 14px;align-items:start}
+.rp .fl{display:flex;justify-content:space-between;gap:8px;font:500 13.5px "Barlow Semi Condensed",Barlow,sans-serif;margin-bottom:3px;color:#1d2733}
+.rp .fl i{font-style:normal;color:#5b6878}
+.rp .fv{display:flex;justify-content:space-between;align-items:center;gap:8px;border:1px solid #9fd6b7;border-radius:7px;padding:6px 10px;min-height:34px;font:15px "IBM Plex Mono",monospace;background:#fff;color:#1d2733}
 .rp .fv.vi{background:#fff5d6;border-color:#ead08a}
-.rp .fv em{font-style:normal;color:#555;font-size:12px;text-align:right}
+.rp .fv.fs{font-family:Barlow,sans-serif}
+.rp .fv em{font:12.5px Barlow,sans-serif;font-style:normal;color:#5b6878;text-align:right}
+.rp .fh{font-size:12px;color:#5b6878;margin-top:2px}
+.rp .fck{display:flex;align-items:center;gap:8px;font:500 14px "Barlow Semi Condensed",Barlow,sans-serif;margin:10px 0 6px}
+.rp .cb{width:16px;height:16px;border-radius:3px;background:#5579b0;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:12px;line-height:1}
+.rp .cb.off{background:#fff;border:1px solid #7a8794}
+.rp .fsug{background:#ffe1d2;border-radius:7px;padding:8px 12px;font-size:13px;line-height:1.5}
 .rp .concl{border:1.5px solid #111;padding:8px 12px;margin-top:6px;font-weight:600}
 .rp svg{width:100%;height:auto;display:block;border:1px solid #ccd}
 .rp svg text{font-size:13px;stroke:#fff}
@@ -311,7 +317,7 @@ dialog::backdrop{background:rgba(20,28,40,.45)}
 <script>
 {
 const $=id=>document.getElementById(id);
-const DEF={P:50,e:7,q:0.8,lay:'c',rho:50,l:1.5,d:65,b:40,radm:'4',uv:0.55,uo:0.33,uAuto:true,
+const DEF={P:50,e:7,q:0.8,lay:'c',rho:50,l:1.5,d:65,b:40,radm:'4',uv:0.55,uo:0.33,uAuto:true,soil:'',
  hBen:'',hAdr:'',hPro:'',hNr:'',hFaza:'',hData:'',
  t1:'Este realizat din plasă de oțel zincat, având centura de protecție din OLZn 25x4 mm. Elementele de coborâre sunt din OL având S = 50 mm², fiind în număr de 12.',
  t2:'Dacă între două puncte ale corpului omenesc se aplică o diferență de potențial, el va fi parcurs de un curent electric, fapt ce poate duce la accidente foarte grave. Pentru prevenirea acestor accidente se prevede priza de pământ. Legarea la pământ asigură realizarea protecției împotriva tensiunilor accidentale ce pot apărea la părțile metalice ale utilajelor, părți care în mod normal nu se găsesc sub tensiune.'};
@@ -580,15 +586,18 @@ function buildReport(){
   antet:()=>`<table class="ct"><tr><td colspan="2"><b>Beneficiar</b>${esc(st.hBen)||'&nbsp;'}</td><td colspan="2"><b>Adresa</b>${esc(st.hAdr)||'&nbsp;'}</td></tr><tr><td colspan="2"><b>Proiectant</b>${esc(st.hPro)||'&nbsp;'}</td><td><b>Nr. Proiect</b>${esc(st.hNr)||'&nbsp;'}</td><td><b>Faza</b>${esc(st.hFaza)||'&nbsp;'}${st.hData?' · '+esc(st.hData.split('-').reverse().join('.')):''}</td></tr></table>`,
   desc1:()=>H2('Paratrăsnetul')+`<p>${esc(st.t1)}</p>`,
   desc2:()=>H2('Instalația de protecție la atingere')+`<p>${esc(st.t2)}</p>`,
-  date:()=>{const fld=(lab,sym,val,u,inp=true)=>`<div class="ff"><div class="fl"><span>${lab}</span><i>${sym}</i></div><div class="fv${inp&&col?' vi':''}"><span>${val}</span><em>${u}</em></div></div>`;
-   const grp=(t,items,note='')=>`<div class="fgrp"><h4>${t}</h4><div class="fg">${items.join('')}</div>${note?`<div class="lg">${note}</div>`:''}</div>`;
-   const N=x=>esc(nstr(x));
+  date:()=>{const fld=(lab,sym,val,u,hint='')=>`<div class="ff"><div class="fl"><span>${lab}</span><i>${sym}</i></div><div class="fv vi"><span>${val}</span><em>${u}</em></div>${hint?`<div class="fh">${hint}</div>`:''}</div>`;
+   const sel=(lab,sym,val,hint='')=>`<div class="ff"><div class="fl"><span>${lab}</span><i>${sym}</i></div><div class="fv fs"><span>${val}</span><em>▾</em></div>${hint?`<div class="fh">${hint}</div>`:''}</div>`;
+   const grp=(t,items,extra='')=>`<div class="fgrp"><h4>${t}</h4><div class="fg">${items.join('')}</div>${extra}</div>`;
+   const N=x=>esc(nstr(x)),soilTxt=st.soil!==''&&SOILS[+st.soil]?`${esc(SOILS[+st.soil][0])} · ${SOILS[+st.soil][1]} Ω·m`:'— nealeasă —';
+   const radmTxt={1:'1 Ω (priză comună cu paratrăsnetul)',4:'4 Ω (instalație de protecție)',10:'10 Ω (paratrăsnet separat)'}[adm]||adm+' Ω';
+   const box=S?`<div class="fck"><span class="cb${st.uAuto?'':' off'}">${st.uAuto?'✓':''}</span>Preia automat din tabelul A5.34-5 (I7-2011)</div><div class="fsug"><b>Din tabel: u<sub>v</sub> = ${esc(fmt(S.uv,2))}, u<sub>o</sub> = ${esc(fmt(S.uo,2))}</b><br>${esc(suggInfo(r.n,r.al,st.lay))}</div>${tabU?'':'<div class="fh">Valorile u<sub>v</sub>, u<sub>o</sub> folosite în calcul sunt adoptate de proiectant.</div>'}`:'';
    return H2('Date de intrare')+`<div class="fform">`+
-   grp('Geometria prizei',[fld('Perimetrul prizei','P',N(r.P),'m'),fld('Distanța între electrozi','e',N(r.e),'m'),fld('Adâncimea de îngropare','q',N(r.q),'m')])+
-   grp('Solul',[fld('Rezistivitatea solului','ρ',N(r.rho),'Ω·m')])+
+   grp('Geometria prizei',[fld('Perimetrul prizei','P',N(r.P),'m'),fld('Distanța între electrozi','e',N(r.e),'m'),fld('Adâncimea de îngropare','q',N(r.q),'m','de la suprafață la capătul superior'),sel('Dispunerea electrozilor','',st.lay==='c'?'Pe contur închis':'În linie (contur deschis)')])+
+   grp('Solul',[fld('Rezistivitatea solului','ρ',N(r.rho),'Ω·m'),sel('Natura solului (tabel A5.34-2)','',soilTxt)])+
    grp('Electrozi verticali (țeavă)',[fld('Lungimea electrodului','l',N(r.l),'m'),fld('Diametrul exterior','d',N(r.d*1000),'mm')])+
-   grp('Electrod orizontal (bandă OLZn)',[fld('Lățimea benzii','b',N(r.b*1000),'mm'),fld('Rezistența admisă','R<sub>adm</sub>',adm+' Ω',`${adm===1?'priză comună cu paratrăsnetul':adm===4?'instalație de protecție':'paratrăsnet separat'}`,false)])+
-   grp('Factori de utilizare',[fld('Priza verticală','u<sub>v</sub>',N(r.uv),''),fld('Priza orizontală','u<sub>o</sub>',N(r.uo),'')],tabU&&S?'Valori din tabelul A5.34-5 (I7-2011): '+esc(suggInfo(r.n,r.al,st.lay)):'Valori adoptate de proiectant.')+
+   grp('Electrod orizontal (bandă OLZn)',[fld('Lățimea benzii','b',N(r.b*1000),'mm',`ex. OLZn ${N(r.b*1000)}×4 mm → ${N(r.b*1000)}`),sel('Rezistența admisă','R<sub>adm</sub>',radmTxt)])+
+   grp('Factori de utilizare',[fld('Priza verticală','u<sub>v</sub>',N(r.uv),''),fld('Priza orizontală','u<sub>o</sub>',N(r.uo),'')],box)+
    `</div>`},
   calc:()=>H2('Calculul prizei de pământ (I7-2011, Anexa 5.34)')+(ok?'':'<p>Datele de calcul sunt incomplete.</p>')+STEPS.map(s=>{const o=r.steps[s.id],mod=FX[s.id]!=null&&FX[s.id]!==s.ex;
    return `<div class="st"><h3>${s.t} – ${s.name}${mod?' <span style="font-weight:500;color:#a02c43">(formulă modificată de proiectant)</span>':''}</h3>${REP.fx&&o.ast?`<div class="eqline">${eqHTML(r,s,false)}</div><div class="eqline">${eqHTML(r,s,true)}</div>`:`<div class="eqline">${M(mvar(s.id)+'<mo>=</mo>'+mnum(o.v,'vc')+`<mspace width=".3em"></mspace><mi mathvariant="normal">${esc(s.u)}</mi>`)}</div>`}${s.extra&&REP.fx?`<div class="lg">${s.extra}</div>`:''}</div>`}).join(''),
@@ -679,6 +688,7 @@ $('soil').addEventListener('change',e=>{const i=e.target.value;if(i!==''){$('rho
 document.addEventListener('input',e=>{const t=e.target;
  if(t.classList.contains('fx')){const s=STEPS.find(x=>x.id===t.dataset.id);const v=t.value.trim();if(v===s.ex)delete FX[s.id];else FX[s.id]=v;save('pp-fx',FX);render();return}
  if(t.id==='uv'||t.id==='uo'){$('uAuto').checked=false}
+ if(t.id==='rho'){$('soil').value=''}
  if(t.id&&KEYS.includes(t.id)){read();if('h' in t.dataset){if($('dlg').open)preview()}else render()}});
 $('lay').addEventListener('change',()=>{read();render()});$('radm').addEventListener('change',()=>{read();render()});
 $('frm').addEventListener('submit',e=>e.preventDefault());
