@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Calcul priză de pământ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style id="mainCss">
+/* VOICE work: a design engineer's calculation sheet, calm and exact
+   IDEA the "breviar de calcul" with a drawing title block (cartuș) on top
+   PICTURE live plan of the contour + animated section through the earthing
+   COLOUR pastel blue page; cream = values you type, lilac = values the app computes; mint cartuș, peach strip
+   TYPE Barlow Semi Condensed (titles) + Barlow (text) + MathML for formulas
+   LAYOUT laptop: cartuș band, inputs | result+plan, section animation, steps; phone: stacked */
+:root{color-scheme:light dark;
+--bg:light-dark(#dfeaf8,#121a26);--ink:light-dark(#1d2733,#e6ebf1);--mute:light-dark(#5b6878,#9aa7b6);
+--line:light-dark(#c3d3e8,#2c3a4c);--panel:light-dark(#ffffff,#19202a);
+--mint:light-dark(#d5f0df,#1b3a2c);--mint2:light-dark(#9fd6b7,#3d7a60);
+--blue:light-dark(#ece6fb,#2a2342);--blue2:light-dark(#b7a6e8,#7a68b8);--sky2:light-dark(#9ebde8,#5579b0);
+--inp:light-dark(#fff5d6,#3a3220);--inp2:light-dark(#ead08a,#8a7340);--inpk:light-dark(#7a5a00,#f0d48a);
+--calk:light-dark(#4a3790,#cbbcf5);
+--peach:light-dark(#ffe1d2,#4a2f24);--peach2:light-dark(#f2a785,#d98a66);
+--ok:light-dark(#d3f0de,#1f4030);--okink:light-dark(#1e6a43,#9be0b9);
+--bad:light-dark(#fbd9df,#4a2229);--badink:light-dark(#a02c43,#f5a9b8);
+--hdr:light-dark(#c6daf3,#1a2a40);--hdr2:light-dark(#9ebde8,#3c5b88);--soil:light-dark(#d6c4a2,#3d3428);--strip:light-dark(#3f78c4,#79a8e6)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:16px/1.55 Barlow,system-ui,sans-serif;overflow-x:clip}
+h1,h2,h3,label,.lbl,button,th,summary{font-family:"Barlow Semi Condensed",Barlow,sans-serif}
+h1{font-size:clamp(30px,4vw,44px);line-height:1.05;letter-spacing:-.02em;margin:0;font-weight:700;text-wrap:balance}
+h2{font-size:24px;line-height:1.15;margin:0;font-weight:600}
+h3{font-size:18px;margin:0 0 8px;font-weight:600}
+.wrap{max-width:1240px;margin:0 auto;padding:0 max(16px,4vw)}
+.num{font-family:"IBM Plex Mono",ui-monospace,monospace}
+math{font-size:1.15em;font-family:"Cambria Math","STIX Two Math","Latin Modern Math",math,serif}
+mn.vi{color:var(--inpk);font-weight:600}mn.vc{color:var(--calk);font-weight:600}
+header.top{background:var(--hdr);border-bottom:1px solid var(--hdr2);padding:22px 0 20px}
+.toprow{display:flex;flex-wrap:wrap;gap:14px 24px;align-items:flex-end;justify-content:space-between;margin-bottom:14px}
+.toprow p{margin:4px 0 0;color:var(--mute)}
+.actions{display:flex;flex-wrap:wrap;gap:8px}
+button{font-size:16px;font-weight:600;min-height:44px;padding:0 16px;border-radius:8px;border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer}
+button:hover{border-color:var(--sky2)}
+button:disabled{opacity:.4;cursor:default}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,summary:focus-visible{outline:3px solid var(--sky2);outline-offset:2px}
+button.pri{background:var(--sky2);border-color:var(--sky2);color:#10233d}
+button.sm{min-height:36px;padding:0 10px;font-size:15px}
+.legend{display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:12px;font-size:15px}
+.legend span{display:inline-flex;align-items:center;gap:8px}
+.sw{width:22px;height:16px;border-radius:4px;display:inline-block;border:1px solid}
+.sw.i{background:var(--inp);border-color:var(--inp2)}.sw.c{background:var(--blue);border-color:var(--blue2)}
+.cartus{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));border:1.5px solid var(--ink);background:var(--panel)}
+.cartus .c{border-right:1px solid var(--line);border-bottom:1px solid var(--line);padding:6px 10px 8px}
+.cartus .c label{display:block;font-size:13px;color:var(--mute);font-weight:500}
+.cartus input{width:100%;border:0;background:transparent;font:500 16px Barlow,sans-serif;color:var(--ink);padding:2px 0;min-height:30px}
+.c.w3{grid-column:span 3}.c.w1{grid-column:span 1}
+main{padding:26px 0 40px}
+.grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:24px;align-items:start}
+.panel{background:var(--mint);border:1px solid var(--mint2);border-radius:12px;padding:18px 18px 8px}
+fieldset{border:0;padding:0;margin:0 0 16px}
+legend{font:600 17px "Barlow Semi Condensed",sans-serif;padding:0;margin-bottom:8px;color:var(--ink)}
+.fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 14px}
+.f label{display:flex;justify-content:space-between;gap:8px;font-size:15px;font-weight:500;margin-bottom:3px}
+.f label span{color:var(--mute);font-weight:400;white-space:nowrap}
+.f .in{display:flex;align-items:center;border:1px solid var(--inp2);border-radius:8px;background:var(--inp)}
+.f .in.sel{background:var(--panel);border-color:var(--mint2)}
+.f input,.f select{width:100%;border:0;background:transparent;color:var(--ink);font:16px "IBM Plex Mono",monospace;padding:9px 10px;min-height:44px}
+.f select{font-family:Barlow,sans-serif}
+.f .u{padding:0 10px;color:var(--mute);font-size:14px;white-space:nowrap}
+.f small{display:block;color:var(--mute);font-size:13px;margin-top:2px}
+.sugg{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;background:var(--peach);border-radius:8px;padding:10px 12px;margin:10px 0 6px;font-size:15px}
+.sugg button{min-height:38px;font-size:15px}
+.res{position:sticky;top:12px}
+.rescard{background:var(--mint);border:1px solid var(--mint2);border-radius:12px;padding:18px}
+.big{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 14px}
+.big .v{font:600 clamp(44px,7vw,68px)/1 "Barlow Semi Condensed",sans-serif;letter-spacing:-.02em;white-space:nowrap;color:var(--calk)}
+.big .k{font:600 20px "Barlow Semi Condensed",sans-serif}
+.tag{font:500 13px Barlow,sans-serif;color:var(--calk);border:1px solid var(--blue2);border-radius:999px;padding:1px 8px;white-space:nowrap}
+.verdict{display:inline-flex;align-items:center;gap:8px;border-radius:999px;padding:6px 14px;font-weight:600;margin-top:8px}
+.verdict.ok{background:var(--panel);color:var(--okink);border:1.5px solid var(--okink)}.verdict.bad{background:var(--bad);color:var(--badink);border:1.5px solid var(--badink)}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(8.5em,1fr));gap:8px;margin-top:14px}
+.kpi{background:var(--blue);border-radius:8px;padding:8px 10px;border:1px dashed var(--blue2)}
+.kpi .lbl{font-size:13px;color:var(--mute)}.kpi .num{font-size:18px;white-space:nowrap;color:var(--calk)}
+.fig{position:relative;height:330px;margin-top:14px;background:var(--panel);border-radius:10px;border:1px solid var(--line)}
+.fig>svg{position:absolute;inset:0;width:100%;height:100%}
+svg text{font:14px Barlow,sans-serif;fill:var(--ink);paint-order:stroke;stroke:var(--panel);stroke-width:4px}
+.steel0{stop-color:light-dark(#c9d6e3,#6c7f93)}.steel1{stop-color:light-dark(#f4f8fb,#a9b9c9)}
+.anim{margin-top:30px}
+.ahead{display:flex;flex-wrap:wrap;gap:10px 20px;align-items:center;justify-content:space-between;margin-bottom:12px}
+.afig{position:relative;height:clamp(400px,46vw,580px);background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.afig>svg{position:absolute;inset:0;width:100%;height:100%}
+.afig svg text{font-size:13px}
+.prog{height:4px;background:var(--line);border-radius:2px;margin-top:8px;overflow:hidden}.prog i{display:block;height:100%;width:0;background:var(--sky2)}
+.steps{margin-top:30px}
+details.step{border-top:1px solid var(--line)}
+details.step>summary{list-style:none;display:grid;grid-template-columns:11em minmax(0,1fr) auto auto;gap:6px 16px;align-items:center;padding:12px 0;cursor:pointer;min-height:56px}
+details.step>summary::-webkit-details-marker{display:none}
+.step .t{font:600 17px "Barlow Semi Condensed",sans-serif}
+.step .t small{display:block;font:400 14px Barlow,sans-serif;color:var(--mute)}
+.step .r{font:600 20px "Barlow Semi Condensed",sans-serif;white-space:nowrap;text-align:right;background:var(--blue);border:1px solid var(--blue2);color:var(--calk);border-radius:8px;padding:4px 12px}
+.chev{font:500 14px Barlow,sans-serif;color:var(--mute);white-space:nowrap}
+.chev::after{content:" ▾";display:inline-block;transition:transform .2s}
+details[open] .chev::after{transform:rotate(180deg)}
+.mod{font:500 13px Barlow,sans-serif;color:var(--badink);background:var(--bad);border-radius:999px;padding:1px 8px}
+.sbody{padding:4px 0 16px 0;display:grid;gap:10px}
+.eqline{overflow-x:auto;padding:6px 2px;font-size:17px}
+.edit{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center}
+.edit input{width:100%;font:15px "IBM Plex Mono",monospace;padding:8px 10px;min-height:44px;border:1px solid var(--inp2);background:var(--inp);color:var(--ink);border-radius:8px}
+.edit input.badin{border-color:var(--badink)}
+.hint{font-size:13px;color:var(--mute)}.err{font-size:14px;color:var(--badink)}
+.step.fin .r{font-size:22px}
+.desc{margin-top:30px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px}
+textarea{width:100%;min-height:150px;border:1px solid var(--inp2);border-radius:8px;background:var(--inp);color:var(--ink);font:16px/1.55 Barlow,sans-serif;padding:10px 12px;resize:vertical}
+.ref{margin-top:30px}
+.scroll{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:15px}
+th,td{border-bottom:1px solid var(--line);padding:6px 8px;text-align:right;white-space:nowrap}
+th{font-weight:600;background:var(--mint)}
+td:first-child,th:first-child{text-align:left}
+details.ref summary{cursor:pointer;font:600 18px "Barlow Semi Condensed",sans-serif;min-height:44px;display:flex;align-items:center}
+.note{color:var(--mute);font-size:14px}
+.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:8px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:9}
+.toast.on{opacity:1}
+dialog{border:0;padding:0;border-radius:14px;width:min(1180px,96vw);max-height:94vh;background:var(--bg);color:var(--ink)}
+dialog::backdrop{background:rgba(20,28,40,.45)}
+.dlg{display:grid;grid-template-columns:minmax(260px,330px) minmax(0,1fr);height:min(90vh,900px)}
+.dside{padding:18px;border-right:1px solid var(--line);overflow:auto;display:flex;flex-direction:column;gap:12px}
+.dside h2{font-size:22px}
+.secl{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.secl li{display:flex;align-items:center;gap:6px;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:4px 6px 4px 10px}
+.secl label{flex:1;display:flex;align-items:center;gap:8px;font-size:16px;min-height:40px;cursor:pointer}
+.secl input{width:20px;height:20px;accent-color:#5579b0}
+.secl button{min-height:34px;padding:0 9px;font-size:15px}
+.opt{display:flex;align-items:center;gap:8px;font-size:15px}
+.opt input{width:20px;height:20px;accent-color:#5579b0}
+.dpre{overflow:auto;background:light-dark(#cfdcee,#0c1015);padding:20px}
+.paper{background:#fff;color:#111;max-width:794px;margin:0 auto;padding:44px 48px;box-shadow:0 2px 10px rgba(0,0,0,.12);color-scheme:light}
+#report{display:none}
+/* breviar */
+.rp{font:14px/1.5 Barlow,Arial,sans-serif;color:#111;color-scheme:light}
+.rp h1{font-size:22px;letter-spacing:0;text-align:center;margin:10px 0 14px}
+.rp h2{font-size:17px;margin:18px 0 8px;border-bottom:1.5px solid #111;padding-bottom:3px}
+.rp p{margin:0 0 8px;text-align:justify}
+.rp table{font-size:13px}
+.rp th,.rp td{border:1px solid #9aa;padding:4px 7px;white-space:normal}
+.rp th{background:#eef6f1}
+.rp .ct td{text-align:left}.rp .ct td b{display:block;font-size:11px;color:#555;font-weight:500}
+.rp td.vi{background:#fff8de}.rp td.vc{background:#efeafc;font-weight:600}
+.rp .st{margin:0 0 10px;break-inside:avoid}
+.rp .st h3{font-size:14px;margin:0 0 2px}
+.rp .st .eqline{font-size:15px;padding:2px 0;overflow:visible}
+.rp h2{break-after:avoid}
+.rp .fform{display:grid;gap:10px}
+.rp .fgrp{break-inside:avoid}
+.rp .fgrp h4{font:600 14px "Barlow Semi Condensed",Barlow,sans-serif;margin:0 0 4px}
+.rp .fg{display:grid;grid-template-columns:1fr 1fr;gap:6px 16px}
+.rp .fl{display:flex;justify-content:space-between;gap:8px;font:500 12.5px "Barlow Semi Condensed",Barlow,sans-serif;margin-bottom:2px}
+.rp .fl i{font-style:normal;color:#555}
+.rp .fv{display:flex;justify-content:space-between;align-items:center;gap:8px;border:1px solid #b9c3cf;border-radius:6px;padding:4px 10px;min-height:28px;font-size:13.5px}
+.rp .fv.vi{background:#fff5d6;border-color:#ead08a}
+.rp .fv em{font-style:normal;color:#555;font-size:12px;text-align:right}
+.rp .concl{border:1.5px solid #111;padding:8px 12px;margin-top:6px;font-weight:600}
+.rp svg{width:100%;height:auto;display:block;border:1px solid #ccd}
+.rp svg text{font-size:13px;stroke:#fff}
+.rp .lg{font-size:12px;color:#555;margin:4px 0 0}
+.rp .blk{break-inside:avoid;margin-bottom:6px}
+.rp mn.vi{color:#7a5a00}.rp mn.vc{color:#4a3790}
+@media print{@page{size:A4;margin:14mm 14mm 16mm}body>*:not(#report){display:none!important}#report{display:block}body{background:#fff}*{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+@media(max-width:900px){.grid{grid-template-columns:minmax(0,1fr)}.res{position:static;order:-1}.desc{grid-template-columns:minmax(0,1fr)}.dlg{grid-template-columns:minmax(0,1fr);height:auto}.dside{border-right:0;border-bottom:1px solid var(--line)}.dpre{max-height:70vh}}
+@media(max-width:720px){.cartus{grid-template-columns:repeat(2,minmax(0,1fr))}.c.w3,.c.w1{grid-column:span 1}.c.full{grid-column:1/-1}details.step>summary{grid-template-columns:minmax(0,1fr) auto}.step .chev,.step .sumeq:empty{display:none}.paper{padding:22px 18px}}
+@media(max-width:600px){.fields{grid-template-columns:minmax(0,1fr)}table{font-size:13px}th,td{padding:5px 4px}.fig{height:300px}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<header class="top">
+ <div class="wrap">
+  <div class="toprow">
+   <div><h1>Calculul prizei de pământ</h1><p>Priză complexă: electrozi verticali legați cu electrod orizontal. Relații din I7-2011, Anexa 5.34.</p></div>
+   <div class="actions">
+    <button id="bPrint" class="pri" type="button">Breviar / PDF</button>
+    <button id="bCopy" type="button">Copiază text</button>
+    <button id="bReset" type="button">Valori inițiale</button>
+   </div>
+  </div>
+  <div class="cartus" aria-label="Date proiect">
+   <div class="c w3 full"><label for="hBen">Beneficiar</label><input id="hBen" data-h></div>
+   <div class="c w3 full"><label for="hAdr">Adresa</label><input id="hAdr" data-h></div>
+   <div class="c w3 full"><label for="hPro">Proiectant</label><input id="hPro" data-h></div>
+   <div class="c w1"><label for="hNr">Nr. Proiect</label><input id="hNr" data-h></div>
+   <div class="c w1"><label for="hFaza">Faza</label><input id="hFaza" data-h list="fazeL"></div>
+   <div class="c w1"><label for="hData">Data</label><input id="hData" data-h type="date"></div>
+  </div>
+  <datalist id="fazeL"><option value="SF"><option value="DALI"><option value="PT"><option value="DTAC"><option value="DE"><option value="PT+DE"></datalist>
+  <div class="legend"><span><i class="sw i"></i>Valori introduse de tine</span><span><i class="sw c"></i>Valori calculate de aplicație (nu se editează)</span></div>
+ </div>
+</header>
+
+<main class="wrap">
+ <div class="grid">
+  <form class="panel" id="frm" autocomplete="off">
+   <fieldset>
+    <legend>Geometria prizei</legend>
+    <div class="fields">
+     <div class="f"><label for="P">Perimetrul prizei <span>P</span></label><div class="in"><input id="P" type="number" step="0.1" min="1"><span class="u">m</span></div></div>
+     <div class="f"><label for="e">Distanța între electrozi <span>e</span></label><div class="in"><input id="e" type="number" step="0.1" min="0.5"><span class="u">m</span></div></div>
+     <div class="f"><label for="q">Adâncimea de îngropare <span>q</span></label><div class="in"><input id="q" type="number" step="0.05" min="0.1"><span class="u">m</span></div><small>de la suprafață la capătul superior</small></div>
+     <div class="f"><label for="lay">Dispunerea electrozilor</label><div class="in sel"><select id="lay"><option value="c">Pe contur închis</option><option value="l">În linie (contur deschis)</option></select></div></div>
+    </div>
+   </fieldset>
+   <fieldset>
+    <legend>Solul</legend>
+    <div class="fields">
+     <div class="f"><label for="rho">Rezistivitatea solului <span>ρ</span></label><div class="in"><input id="rho" type="number" step="1" min="0.01"><span class="u">Ω·m</span></div></div>
+     <div class="f"><label for="soil">Natura solului (tabel A5.34-2)</label><div class="in sel"><select id="soil"></select></div><small>alege pentru a prelua valoarea recomandată</small></div>
+    </div>
+   </fieldset>
+   <fieldset>
+    <legend>Electrozi verticali (țeavă)</legend>
+    <div class="fields">
+     <div class="f"><label for="l">Lungimea electrodului <span>l</span></label><div class="in"><input id="l" type="number" step="0.1" min="0.3"><span class="u">m</span></div></div>
+     <div class="f"><label for="d">Diametrul exterior <span>d</span></label><div class="in"><input id="d" type="number" step="1" min="5"><span class="u">mm</span></div></div>
+    </div>
+   </fieldset>
+   <fieldset>
+    <legend>Electrod orizontal (bandă OLZn)</legend>
+    <div class="fields">
+     <div class="f"><label for="b">Lățimea benzii <span>b</span></label><div class="in"><input id="b" type="number" step="1" min="5"><span class="u">mm</span></div><small>ex. OLZn 40×4 mm → 40</small></div>
+     <div class="f"><label for="radm">Rezistența admisă <span>Radm</span></label><div class="in sel"><select id="radm"><option value="1">1 Ω (priză comună cu paratrăsnetul)</option><option value="4">4 Ω (instalație de protecție)</option><option value="10">10 Ω (paratrăsnet separat)</option></select></div></div>
+    </div>
+   </fieldset>
+   <fieldset>
+    <legend>Factori de utilizare</legend>
+    <div class="fields">
+     <div class="f"><label for="uv">Priza verticală <span>uv</span></label><div class="in"><input id="uv" type="number" step="0.01" min="0.05" max="1"></div></div>
+     <div class="f"><label for="uo">Priza orizontală <span>uo</span></label><div class="in"><input id="uo" type="number" step="0.01" min="0.05" max="1"></div></div>
+    </div>
+    <label class="opt" style="margin-top:10px"><input type="checkbox" id="uAuto"> Preia automat din tabelul A5.34-5 (I7-2011)</label>
+    <div class="sugg"><div id="suggT" style="flex:1 1 260px"></div><button type="button" id="bSugg">Aplică valorile din tabel</button></div>
+    <p class="note" id="uSrc" style="margin:4px 0 0"></p>
+   </fieldset>
+  </form>
+
+  <aside class="res" aria-live="polite">
+   <div class="rescard">
+    <div class="lbl" style="font-size:15px;display:flex;gap:8px;align-items:center;flex-wrap:wrap">Rezistența totală a prizei de pământ <span class="tag">calculat</span></div>
+    <div class="big"><span class="k">R<sub>PP</sub> =</span><span class="v" id="vR">–</span></div>
+    <div id="verd" class="verdict"></div>
+    <div class="kpis">
+     <div class="kpi"><div class="lbl">Electrozi n</div><div class="num" id="kN"></div></div>
+     <div class="kpi"><div class="lbl">R<sub>PV</sub> verticală</div><div class="num" id="kV"></div></div>
+     <div class="kpi"><div class="lbl">R<sub>PO</sub> orizontală</div><div class="num" id="kO"></div></div>
+     <div class="kpi"><div class="lbl">Raport e / l</div><div class="num" id="kA"></div></div>
+    </div>
+    <div class="fig" id="fig"><svg id="sch" role="img" aria-label="Schița prizei de pământ"></svg></div>
+   </div>
+  </aside>
+ </div>
+
+ <section class="anim">
+  <div class="ahead"><h2>Secțiune prin priza de pământ</h2>
+   <div class="actions"><button type="button" id="aPlay">Pauză</button><button type="button" id="aRe" class="pri">Reia animația</button></div></div>
+  <div class="afig" id="afig"><svg id="asv" role="img" aria-label="Animație: secțiune prin priza de pământ, cu piesa de separație, banda orizontală și electrozii verticali cotați"></svg></div>
+  <div class="prog"><i id="aBar"></i></div>
+  
+ </section>
+
+ <section class="steps">
+  <div class="ahead"><h2>Etapele de calcul</h2>
+   <div class="actions"><button type="button" id="bOpen" class="sm">Arată toate formulele</button><button type="button" id="bClose" class="sm">Ascunde formulele</button><button type="button" id="bFxReset" class="sm">Formulele din normativ</button></div></div>
+  <p class="note" style="margin-top:0">Apasă pe o etapă pentru a vedea formula și înlocuirea numerică. Formula se poate modifica în câmpul de sub ea, iar rezultatul se recalculează imediat.</p>
+  <div id="steps"></div>
+ </section>
+
+ <section class="desc">
+  <div><h3><label for="t1">1) Paratrăsnetul</label></h3><textarea id="t1" data-h></textarea></div>
+  <div><h3><label for="t2">2) Instalația de protecție la atingere</label></h3><textarea id="t2" data-h></textarea></div>
+ </section>
+
+ <section class="ref">
+  <details class="ref">
+   <summary>Tabelul A5.34-5: factori de utilizare (I7-2011)</summary>
+   <div class="scroll" id="tbl"></div>
+   <p class="note">Valorile intermediare sunt interpolate liniar după n și după raportul a/l. Pentru a/l peste 3 se folosește coloana a = 3l.</p>
+  </details>
+ </section>
+</main>
+
+<dialog id="dlg" aria-labelledby="dlgT">
+ <div class="dlg">
+  <div class="dside">
+   <h2 id="dlgT">Breviar de calcul</h2>
+   <p class="note" style="margin:0">Bifează ce apare în breviar și schimbă ordinea cu săgețile. Previzualizarea se actualizează imediat.</p>
+   <ul class="secl" id="secl"></ul>
+   <label class="opt"><input type="checkbox" id="oFx"> Formulele și înlocuirile numerice</label>
+   <label class="opt"><input type="checkbox" id="oCol"> Culori pentru introdus / calculat</label>
+   <div class="actions" style="flex-direction:column">
+    <button type="button" class="pri" id="bDl">Descarcă PDF</button>
+    <button type="button" id="bDoPrint">Printează</button>
+    <button type="button" id="bDlgClose">Închide</button>
+   </div>
+   <p class="note" id="prNote" style="margin:0"></p>
+  </div>
+  <div class="dpre"><div class="paper"><div id="rpv" class="rp"></div></div></div>
+ </div>
+</dialog>
+<div id="report" class="rp"></div>
+<div class="toast" id="toast"></div>
+
+<script>
+{
+const $=id=>document.getElementById(id);
+const DEF={P:50,e:7,q:0.8,lay:'c',rho:50,l:1.5,d:65,b:40,radm:'4',uv:0.55,uo:0.33,uAuto:true,
+ hBen:'',hAdr:'',hPro:'',hNr:'',hFaza:'',hData:'',
+ t1:'Este realizat din plasă de oțel zincat, având centura de protecție din OLZn 25x4 mm. Elementele de coborâre sunt din OL având S = 50 mm², fiind în număr de 12.',
+ t2:'Dacă între două puncte ale corpului omenesc se aplică o diferență de potențial, el va fi parcurs de un curent electric, fapt ce poate duce la accidente foarte grave. Pentru prevenirea acestor accidente se prevede priza de pământ. Legarea la pământ asigură realizarea protecției împotriva tensiunilor accidentale ce pot apărea la părțile metalice ale utilajelor, părți care în mod normal nu se găsesc sub tensiune.'};
+const KEYS=Object.keys(DEF);
+const STEPS=[
+ {id:'n',t:'Etapa 1',name:'Numărul necesar de electrozi',u:'buc',dec:0,ex:'round(P/e+0.5)',extra:'n<sub>EO</sub> = n<sub>EV</sub> = n (câte un segment orizontal între doi electrozi verticali)'},
+ {id:'h',t:'Etapa 2a',name:'Adâncimea la mijlocul electrodului vertical',u:'m',dec:3,ex:'q+l/2'},
+ {id:'rV',t:'Etapa 2',name:'Rezistența de dispersie a unui electrod vertical',u:'Ω',dec:3,ex:'0.366*(rho/l)*(lg(2*l/d)+1/2*lg((4*h+l)/(4*h-l)))'},
+ {id:'rO',t:'Etapa 3',name:'Rezistența de dispersie a unui electrod orizontal (bandă de lungime e)',u:'Ω',dec:3,ex:'0.366*(rho/e)*lg(2*e^2/(b*q))'},
+ {id:'RPV',t:'Etapa 4',name:'Rezistența complexă a prizei verticale',u:'Ω',dec:3,ex:'rV/(uv*n)'},
+ {id:'RPO',t:'Etapa 5',name:'Rezistența complexă a prizei orizontale',u:'Ω',dec:3,ex:'rO/(uo*n)'},
+ {id:'RPP',t:'Final',name:'Rezistența totală a prizei de pământ',u:'Ω',dec:3,ex:'RPV*RPO/(RPV+RPO)',fin:true}];
+const INV=['P','e','q','rho','l','d','b','uv','uo'];
+const SYM={P:['P'],e:['e'],q:['q'],rho:['ρ'],l:['l'],d:['d'],b:['b'],uv:['u','v'],uo:['u','o'],n:['n'],h:['h'],rV:['r','V'],rO:['r','O'],RPV:['R','PV'],RPO:['R','PO'],RPP:['R','PP'],pi:['π']};
+const SECS=[['antet','Antet (cartuș)',1],['desc1','1) Paratrăsnetul',1],['desc2','2) Protecție la atingere',1],['date','Date de intrare',1],['calc','Etapele de calcul',1],['concl','Concluzie',1],['plan','Schița în plan',1],['sect','Secțiune prin priză',1],['tab','Tabel factori de utilizare',0]];
+const SOILS=[['Pământ, humă, turbă (foarte umede)',20],['Cernoziom',50],['Pământ arabil',50],['Pământ argilos, argilă',80],['Pământ cu pietriș',200],['Loess, pământ de pădure',200],['Argilă cu nisip',200],['Pământ nisipos',300],['Nisip foarte umed',400],['Balast cu pământ',1000],['Nisip, nisip cu pietriș',1000],['Roci, bazaltate',10000]];
+const NS=[2,3,4,5,6,10,20,40,60,100];
+const U={1:{lv:[.85,.80,.75,.70,.65,.60,.50,null,null,null],lo:[.80,.80,.77,.75,.60,.60,.20,null,null,null],cv:[null,.75,.65,.62,.60,.55,.50,.40,.38,.35],co:[null,.50,.45,.42,.40,.33,.25,.20,.20,.19]},
+ 2:{lv:[.90,.85,.82,.80,.78,.75,.70,null,null,null],lo:[.90,.90,.88,.85,.80,.75,.56,.40,null,null],cv:[null,.80,.75,.72,.70,.66,.61,.55,.52,.50],co:[null,.60,.55,.52,.50,.44,.30,.29,.27,.24]},
+ 3:{lv:[.95,.90,.88,.85,.82,.80,.75,null,null,null],lo:[.95,.90,.85,.82,.80,.75,.68,null,null,null],cv:[null,.90,.85,.82,.80,.75,.70,.65,.62,.60],co:[null,.75,.70,.68,.65,.56,.45,.39,.36,.33]}};
+const load=(k,d)=>{try{const v=JSON.parse(localStorage.getItem(k)||'null');return v??d}catch(_){return d}};
+const save=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(_){}};
+let st=Object.assign({},DEF,load('pp-calc',{}));
+let FX=load('pp-fx',{});
+let REP=Object.assign({order:SECS.map(s=>s[0]),on:Object.fromEntries(SECS.map(s=>[s[0],!!s[2]])),fx:true,col:true},load('pp-rep',{}));
+REP.order=REP.order.filter(id=>SECS.some(s=>s[0]===id));for(const s of SECS)if(!REP.order.includes(s[0]))REP.order.push(s[0]);
+const fmt=(x,k=3)=>isFinite(x)?x.toLocaleString('ro-RO',{maximumFractionDigits:k,minimumFractionDigits:Math.min(k,2)}):'–';
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+// ===== formule: parser, evaluare, MathML =====
+function parse(src){
+ const tk=[];const re=/\s*(?:(\d+(?:\.\d+)?)|([A-Za-z_][A-Za-z_0-9]*)|(\S))/y;let m;
+ while(re.lastIndex<src.length&&(m=re.exec(src))){if(m[1]!==undefined)tk.push({t:'n',v:+m[1]});else if(m[2]!==undefined)tk.push({t:'i',v:m[2]});else if(m[3]!==undefined)tk.push({t:'o',v:m[3]})}
+ if(!tk.length)throw new Error('formula este goală');
+ let i=0;const pk=()=>tk[i],nx=()=>tk[i++];
+ const isO=v=>pk()&&pk().t==='o'&&pk().v===v;
+ const need=v=>{if(!isO(v))throw new Error(`lipsește „${v}”`);i++};
+ function ex(){let a=term();while(isO('+')||isO('-')){const op=nx().v;a={k:'b',op,a,b:term()}}return a}
+ function term(){let a=un();while(isO('*')||isO('/')){const op=nx().v;a={k:'b',op,a,b:un()}}return a}
+ function un(){if(isO('-')){i++;return{k:'neg',a:un()}}if(isO('+')){i++;return un()}return pw()}
+ function pw(){const a=pr();if(isO('^')){i++;return{k:'b',op:'^',a,b:un()}}return a}
+ function pr(){const t=nx();if(!t)throw new Error('expresie incompletă');
+  if(t.t==='n')return{k:'n',v:t.v};
+  if(t.t==='i'){if(isO('(')){i++;const args=[ex()];while(isO(',')){i++;args.push(ex())}need(')');return{k:'f',f:t.v,args}}return{k:'v',v:t.v}}
+  if(t.v==='('){const e=ex();need(')');return{k:'p',a:e}}
+  throw new Error(`simbol neașteptat „${t.v}”`)}
+ const r=ex();if(i<tk.length)throw new Error(`simbol neașteptat „${tk[i].v}”`);return r;
+}
+const FN={lg:Math.log10,log:Math.log10,log10:Math.log10,ln:Math.log,sqrt:Math.sqrt,abs:Math.abs,ceil:Math.ceil,floor:Math.floor,round:x=>Math.sign(x)*Math.round(Math.abs(x)),min:Math.min,max:Math.max,exp:Math.exp};
+function ev(n,env){switch(n.k){
+ case'n':return n.v;case'p':return ev(n.a,env);case'neg':return -ev(n.a,env);
+ case'v':if(n.v==='pi')return Math.PI;if(!(n.v in env))throw new Error(`variabilă necunoscută „${n.v}”`);return env[n.v];
+ case'f':if(!FN[n.f])throw new Error(`funcție necunoscută „${n.f}”`);return FN[n.f](...n.args.map(a=>ev(a,env)));
+ case'b':{const a=ev(n.a,env),b=ev(n.b,env);return n.op==='+'?a+b:n.op==='-'?a-b:n.op==='*'?a*b:n.op==='/'?a/b:a**b}}}
+const strip=n=>n.k==='p'?strip(n.a):n;
+const PR=n=>{n=strip(n);if(n.k==='b')return n.op==='+'||n.op==='-'?1:n.op==='^'?4:n.op==='/'?5:2;if(n.k==='neg')return 3;return 5};
+const nstr=v=>fmt(v,v!==0&&Math.abs(v)<0.1?4:3).replace(/(,\d*?[1-9])0+$|,0+$/,'$1');
+const mnum=(v,c='')=>`<mn${c?` class="${c}"`:''}>${esc(nstr(v))}</mn>`;
+const mvar=v=>{const s=SYM[v]||[v];return s.length>1?`<msub><mi>${esc(s[0])}</mi><mi mathvariant="normal">${esc(s[1])}</mi></msub>`:`<mi>${esc(s[0])}</mi>`};
+const par=x=>`<mrow><mo stretchy="true">(</mo>${x}<mo stretchy="true">)</mo></mrow>`;
+function mm(n0,env){const n=strip(n0);
+ switch(n.k){
+ case'n':return mnum(n.v);
+ case'v':return env&&n.v!=='pi'&&(n.v in env)?mnum(env[n.v],INV.includes(n.v)?'vi':'vc'):mvar(n.v);
+ case'neg':return `<mrow><mo>−</mo>${PR(n.a)<3?par(mm(n.a,env)):mm(n.a,env)}</mrow>`;
+ case'f':{const a=n.args.map(x=>mm(x,env)).join('<mo>,</mo>');
+  if(n.f==='sqrt')return `<msqrt>${a}</msqrt>`;
+  const nm=n.f==='log10'||n.f==='log'?'lg':n.f==='round'?'ROUND':n.f;
+  return `<mrow><mi mathvariant="normal">${esc(nm)}</mi><mo>&#x2061;</mo>${par(a)}</mrow>`}
+ case'b':{const p=PR(n);
+  if(n.op==='/')return `<mfrac><mrow>${mm(n.a,env)}</mrow><mrow>${mm(n.b,env)}</mrow></mfrac>`;
+  if(n.op==='^'){const base=PR(n.a)<5||strip(n.a).k==='b';return `<msup>${base?par(mm(n.a,env)):`<mrow>${mm(n.a,env)}</mrow>`}<mrow>${mm(n.b,env)}</mrow></msup>`}
+  let A=mm(n.a,env),B=mm(n.b,env);
+  if(PR(n.a)<p)A=par(A);
+  if(PR(n.b)<p||(PR(n.b)===p&&n.op==='-'))B=par(B);
+  if(n.op==='*'){const la=strip(n.a),rb=strip(n.b);const implicit=!env&&la.k==='n'&&(rb.k==='v'||rb.k==='f');return `<mrow>${A}<mo>${implicit?'&#x2062;':'·'}</mo>${B}</mrow>`}
+  return `<mrow>${A}<mo>${n.op==='-'?'−':'+'}</mo>${B}</mrow>`}}}
+const M=x=>`<math displaystyle="true">${x}</math>`;
+
+function getAst(s){const src=FX[s.id]??s.ex;try{return{ast:parse(src),src}}catch(err){return{err:err.message,src}}}
+function calc(S){
+ const env={P:+S.P,e:+S.e,q:+S.q,rho:+S.rho,l:+S.l,d:S.d/1000,b:S.b/1000,uv:+S.uv,uo:+S.uo};
+ const out={env,steps:{}};
+ for(const s of STEPS){const g=getAst(s);let v=NaN,err=g.err;
+  if(g.ast){try{v=ev(g.ast,env)}catch(x){err=x.message}}
+  if(!err&&!isFinite(v))err='rezultat nedefinit (verifică datele)';
+  out.steps[s.id]={...g,v,err};env[s.id]=v}
+ Object.assign(out,env,{al:env.e/env.l});
+ return out;
+}
+function interpN(arr,n){const pts=NS.map((x,i)=>[x,arr[i]]).filter(p=>p[1]!=null);
+ if(n<=pts[0][0])return pts[0][1];if(n>=pts[pts.length-1][0])return pts[pts.length-1][1];
+ for(let i=1;i<pts.length;i++)if(n<=pts[i][0]){const[a,va]=pts[i-1],[b,vb]=pts[i];return va+(vb-va)*(n-a)/(b-a)}}
+function suggInfo(n,al,lay){const a=Math.min(3,Math.max(1,al)),lo=Math.floor(a),hi=Math.ceil(a);
+ const kv=lay==='c'?'cv':'lv',ko=lay==='c'?'co':'lo',v2=x=>x.toFixed(2).replace('.',',');
+ const colTxt=c=>{const pts=NS.map((x,i)=>[x,U[c][kv][i],U[c][ko][i]]).filter(p=>p[1]!=null);
+  let i=pts.findIndex(p=>p[0]>=n);let sel;if(i<0)sel=[pts[pts.length-1]];else if(pts[i][0]===n||i===0)sel=[pts[i]];else sel=[pts[i-1],pts[i]];
+  return `a = ${c===1?'':c}l: `+sel.map(p=>`n = ${p[0]} → u1 = ${v2(p[1])}, u2 = ${p[2]==null?'–':v2(p[2])}`).join('; ')};
+ const cols=lo===hi?[lo]:[lo,hi];
+ const why=al>3?` (e/l = ${fmt(al,2)} > 3, se ia coloana a = 3l, acoperitor)`:al<1?` (e/l = ${fmt(al,2)} < 1, se ia coloana a = l)`:lo===hi?'':` (e/l = ${fmt(al,2)}, interpolare între coloane)`;
+ return `${lay==='c'?'Electrozi pe contur închis':'Electrozi așezați în linie'}, n = ${n}${why}. ${cols.map(colTxt).join(' | ')}${(cols.length>1||colTxt(cols[0]).includes(';'))?' → interpolare liniară':''}.`}
+function suggest(n,al,lay){const a=Math.min(3,Math.max(1,al)),lo=Math.floor(a),hi=Math.ceil(a),t=a-lo;
+ const kv=lay==='c'?'cv':'lv',ko=lay==='c'?'co':'lo';const g=k=>{const x=interpN(U[lo][k],n),y=interpN(U[hi][k],n);return x+(y-x)*t};
+ const r2=x=>Math.round(x*100+1e-9)/100;return{uv:r2(g(kv)),uo:r2(g(ko))}}
+
+$('soil').innerHTML='<option value="">— alege —</option>'+SOILS.map((s,i)=>`<option value="${i}">${s[0]} · ${s[1]} Ω·m</option>`).join('');
+function read(){for(const k of KEYS){const el=$(k);if(el)st[k]=el.type==='checkbox'?el.checked:el.value}save('pp-calc',st)}
+function fill(){for(const k of KEYS){const el=$(k);if(el){if(el.type==='checkbox')el.checked=!!st[k];else el.value=st[k]}}}
+
+$('steps').innerHTML=STEPS.map(s=>`<details class="step${s.fin?' fin':''}" id="st-${s.id}"><summary><span class="t">${s.t}<small>${s.name}</small></span><span class="sumeq" id="se-${s.id}"></span><span class="chev">formula</span><span class="r" id="sr-${s.id}"></span></summary>
+<div class="sbody"><div class="eqline" id="sf-${s.id}"></div><div class="eqline" id="ss-${s.id}"></div>${s.extra?`<div class="hint">${s.extra}</div>`:''}
+<div class="edit"><input id="fx-${s.id}" class="fx" data-id="${s.id}" spellcheck="false" autocomplete="off" aria-label="Formula pentru ${esc(s.name)}"><button type="button" class="sm" data-rs="${s.id}">Din normativ</button></div>
+<div class="err" id="er-${s.id}"></div></div></details>`).join('')+'<p class="hint">Sintaxă pentru modificare: + − * / ^ ( ), funcții lg(), ln(), sqrt(), round(); variabile: P, e, q, rho, l, d, b, uv, uo și rezultatele etapelor anterioare (n, h, rV, rO, RPV, RPO). d și b intră în calcul în metri.</p>';
+for(const s of STEPS)$('fx-'+s.id).value=FX[s.id]??s.ex;
+
+let R=null,S=null;
+function valid(r){return !!r&&STEPS.every(s=>!r.steps[s.id].err)&&INV.every(k=>isFinite(r.env[k])&&r.env[k]>0)}
+function eqHTML(r,s,withSub){const o=r.steps[s.id];if(!o.ast)return'';
+ const lhs=mvar(s.id),res=`<mo>=</mo>${mnum(o.v,'vc')}<mspace width=".3em"></mspace><mi mathvariant="normal">${esc(s.u)}</mi>`;
+ return withSub?M(`${lhs}<mo>=</mo>${mm(o.ast,r.env)}${o.err?'':res}`):M(`${lhs}<mo>=</mo>${mm(o.ast,null)}`)}
+function render(){
+ const r=calc(st);R=r;const ok=valid(r),adm=+st.radm;
+ $('vR').textContent=ok?fmt(r.RPP,2)+' Ω':'–';
+ const v=$('verd');
+ if(!ok){v.className='verdict bad';v.textContent='Verifică datele sau formulele'}
+ else if(r.RPP<=adm){v.className='verdict ok';v.textContent=`✓ ${fmt(r.RPP,2)} Ω ≤ ${adm} Ω admis`}
+ else{v.className='verdict bad';v.textContent=`✗ depășește ${adm} Ω: micșorează e sau mărește l / perimetrul`}
+ $('kN').textContent=ok?r.n+' buc':'–';$('kV').textContent=ok?fmt(r.RPV,2)+' Ω':'–';$('kO').textContent=ok?fmt(r.RPO,2)+' Ω':'–';$('kA').textContent=isFinite(r.al)?fmt(r.al,2):'–';
+ if(isFinite(r.n)&&r.n>0&&isFinite(r.al)&&r.al>0){S=suggest(r.n,r.al,st.lay);
+  $('suggT').innerHTML=`<b>Din tabel: u<sub>v</sub> = ${esc(fmt(S.uv,2))}, u<sub>o</sub> = ${esc(fmt(S.uo,2))}</b><br>${esc(suggInfo(r.n,r.al,st.lay))}`;
+  const tv=S.uv,to=S.uo;
+  if(st.uAuto&&(+st.uv!==tv||+st.uo!==to)){st.uv=tv;st.uo=to;$('uv').value=tv;$('uo').value=to;save('pp-calc',st);return render()}
+  const fromT=+st.uv===tv&&+st.uo===to;
+  $('uSrc').textContent=st.uAuto?'Valorile uv și uo sunt preluate automat din tabel și se actualizează când schimbi datele.':fromT?'Valorile introduse coincid cu cele din tabel.':'Valori introduse manual (diferă de tabel). Ex.: 0,55 / 0,33 din Excel corespund rândului a = l, contur, n = 10.';}
+ for(const s of STEPS){const o=r.steps[s.id];
+  $('sr-'+s.id).textContent=o.err?'–':fmt(o.v,s.dec)+' '+s.u;
+  $('sf-'+s.id).innerHTML=o.ast?eqHTML(r,s,false):'';
+  $('ss-'+s.id).innerHTML=o.ast?eqHTML(r,s,true):'';
+  $('se-'+s.id).innerHTML=FX[s.id]!=null&&FX[s.id]!==s.ex?'<span class="mod">formulă modificată</span>':'';
+  $('er-'+s.id).textContent=o.err?'⚠ '+o.err:'';
+  $('fx-'+s.id).classList.toggle('badin',!o.ast)}
+ draw();drawA();
+ if($('dlg').open)preview();
+}
+
+// ===== schița în plan =====
+const svg=$('sch');
+function planMarkup(W,H){
+ const r=R;if(!valid(r))return'';
+ const narrow=W<520,n=Math.max(1,Math.min(r.n,60));
+ const split=narrow?W*0.55:W*0.6,pad=24,pw=split-pad*2,ph=H-pad*2-26,ratio=1.4;
+ let rw=Math.min(pw,Math.min(pw,ph)*ratio),rh=rw/ratio;if(rh>ph){rh=ph;rw=rh*ratio}
+ const x0=pad+(pw-rw)/2,y0=pad+20+(ph-rh)/2,per=2*(rw+rh);
+ const pt=t=>{let s=t*per;if(s<rw)return[x0+s,y0];s-=rw;if(s<rh)return[x0+rw,y0+s];s-=rh;if(s<rw)return[x0+rw-s,y0+rh];s-=rw;return[x0,y0+rh-s]};
+ let g=`<text x="${pad}" y="${pad}" font-weight="600">Plan · ${r.n} electrozi</text>`;
+ if(st.lay==='l'){const yy=y0+rh/2;
+  g+=`<line x1="${x0}" y1="${yy}" x2="${x0+rw}" y2="${yy}" stroke="var(--strip)" stroke-width="4" stroke-linecap="round"/>`;
+  for(let i=0;i<n;i++){const x=x0+(n===1?rw/2:rw*i/(n-1));g+=`<circle cx="${x}" cy="${yy}" r="6.5" fill="var(--sky2)" stroke="var(--panel)" stroke-width="2"/>`}
+  if(n>1)g+=`<text x="${x0+rw/(2*(n-1))}" y="${yy-14}" text-anchor="middle">e = ${fmt(r.e,1)} m</text>`;
+  g+=`<text x="${x0+rw/2}" y="${yy+30}" text-anchor="middle">L = ${fmt(r.P,1)} m</text>`;
+ }else{
+  g+=`<rect x="${x0}" y="${y0}" width="${rw}" height="${rh}" fill="color-mix(in srgb,var(--mint) 55%,transparent)" stroke="var(--strip)" stroke-width="4" rx="2"/>`;
+  g+=`<text x="${x0+rw/2}" y="${y0+rh/2+5}" text-anchor="middle" fill="var(--mute)">Construcție · P = ${fmt(r.P,1)} m</text>`;
+  for(let i=0;i<n;i++){const[x,y]=pt(i/n);g+=`<circle cx="${x}" cy="${y}" r="6.5" fill="var(--sky2)" stroke="var(--panel)" stroke-width="2"/>`}
+  if(n>=2){const[a]=pt(0),[b]=pt(1/n);g+=`<text x="${Math.min((a+b)/2,x0+rw-20)}" y="${y0+20}" text-anchor="middle">e = ${fmt(r.e,1)} m</text>`}
+ }
+ const sx=split+10,sw=W-sx-pad,gy=pad+44,depth=H-gy-pad,k=depth/(r.q+r.l+0.3);
+ const ex=sx+sw*0.42,top=gy+r.q*k,bot=top+r.l*k;
+ g+=`<text x="${sx}" y="${pad}" font-weight="600">Secțiune</text><rect x="${sx}" y="${gy}" width="${sw}" height="${depth}" fill="var(--soil)"/>`;
+ g+=`<line x1="${sx}" y1="${gy}" x2="${sx+sw}" y2="${gy}" stroke="var(--mute)" stroke-width="2"/><line x1="${ex-sw*0.4}" y1="${top}" x2="${ex+sw*0.4}" y2="${top}" stroke="var(--strip)" stroke-width="4"/><rect x="${ex-4}" y="${top}" width="8" height="${bot-top}" fill="var(--sky2)" rx="2"/>`;
+ const dim=(x,y1,y2,t)=>`<line x1="${x}" y1="${y1}" x2="${x}" y2="${y2}" stroke="var(--ink)" stroke-width="1"/><line x1="${x-4}" y1="${y1}" x2="${x+4}" y2="${y1}" stroke="var(--ink)"/><line x1="${x-4}" y1="${y2}" x2="${x+4}" y2="${y2}" stroke="var(--ink)"/><text x="${x+8}" y="${(y1+y2)/2+5}">${t}</text>`;
+ g+=dim(ex+14,gy,top,`q = ${fmt(r.q,2)}`)+dim(ex+14,top,bot,`l = ${fmt(r.l,2)}`)+dim(sx+10,gy,top+(bot-top)/2,narrow?'h':`h = ${fmt(r.h,2)}`);
+ g+=`<text x="${sx+sw/2}" y="${gy-10}" text-anchor="middle" fill="var(--mute)">${narrow?'sol':'sol · ρ = '+fmt(r.rho,0)+' Ω·m'}</text>`;
+ return g;
+}
+function draw(){const W=svg.clientWidth,H=svg.clientHeight;if(W&&H)svg.innerHTML=planMarkup(W,H)}
+
+// ===== animație secțiune =====
+const asv=$('asv');
+const A={t:0,play:true,last:0,total:10,raf:0};
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const cl=(x,a=0,b=1)=>Math.min(b,Math.max(a,x));
+const ph=(t,a,b)=>cl((t-a)/(b-a));
+const eo=u=>1-(1-u)**3;
+const drive=u=>{if(u>=1)return 1;const k=7,i=Math.floor(u*k),f=u*k-i;return(i+eo(cl(f*1.6)))/k};
+function dimH(x1,x2,y,t,al){const a=`opacity="${al}"`;return `<g ${a} stroke="var(--ink)" stroke-width="1"><line x1="${x1}" y1="${y}" x2="${x2}" y2="${y}"/><line x1="${x1-4}" y1="${y+4}" x2="${x1+4}" y2="${y-4}"/><line x1="${x2-4}" y1="${y+4}" x2="${x2+4}" y2="${y-4}"/></g><text ${a} x="${(x1+x2)/2}" y="${y-6}" text-anchor="middle">${t}</text>`}
+function dimV(x,y1,y2,t,al){const a=`opacity="${al}"`,cy=(y1+y2)/2;return `<g ${a} stroke="var(--ink)" stroke-width="1"><line x1="${x}" y1="${y1}" x2="${x}" y2="${y2}"/><line x1="${x-4}" y1="${y1+4}" x2="${x+4}" y2="${y1-4}"/><line x1="${x-4}" y1="${y2+4}" x2="${x+4}" y2="${y2-4}"/></g><text ${a} x="${x-7}" y="${cy}" text-anchor="middle" transform="rotate(-90 ${x-7} ${cy})">${t}</text>`}
+function level(x,y,t,al){return `<g opacity="${al}"><path d="M${x} ${y} l-6 -9 h12 z" fill="none" stroke="var(--ink)"/><line x1="${x}" y1="${y-9}" x2="${x+44}" y2="${y-9}" stroke="var(--ink)"/><text x="${x+2}" y="${y-14}">${t}</text></g>`}
+function sectMarkup(W,H,t){
+ const r=R;if(!valid(r))return{g:'',total:1};
+ const f=(x,d=2)=>fmt(x,d),narrow=W<560;
+ const pad=14,wallW=Math.max(26,Math.min(48,W*0.035)),sx=pad+wallW+14,mR=narrow?100:110;
+ const topZ=Math.min(120,H*0.24),botZ=58,ky=(H-topZ-botZ)/(r.q+r.l+0.15);
+ const g0=topZ,ys=g0+r.q*ky,ye=ys+r.l*ky,aw=W-sx-mR,minSeg=narrow?78:110;
+ const k=Math.max(1,Math.min(r.n,Math.floor(aw/minSeg))),brk=k<r.n,seg=aw/(k+(brk?0.45:0));
+ const xs=[];for(let i=0;i<k;i++)xs.push(sx+(i+1)*seg);
+ const tS=2.2,step=1.35,tE=tS+k*step,total=tE+3;
+ const aScene=ph(t,0,0.8);
+ let g=`<defs><linearGradient id="stl" x1="0" x2="1"><stop offset="0" class="steel0"/><stop offset=".45" class="steel1"/><stop offset="1" class="steel0"/></linearGradient><pattern id="hat" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="8" stroke="var(--mute)" stroke-width="1" opacity=".55"/></pattern></defs>`;
+ g+=`<g opacity="${aScene}"><rect x="0" y="${g0}" width="${W}" height="${H-g0}" fill="var(--soil)"/>`;
+ for(let x=pad+wallW+2;x<W;x+=12)g+=`<line x1="${x}" y1="${g0}" x2="${x-7}" y2="${g0+7}" stroke="var(--mute)" stroke-width="1"/>`;
+ g+=`<line x1="0" y1="${g0}" x2="${W}" y2="${g0}" stroke="var(--ink)" stroke-width="1.6"/>`;
+ const fy=g0+Math.min(r.q*0.75,0.6)*ky;
+ g+=`<rect x="${pad}" y="8" width="${wallW}" height="${fy-8}" fill="url(#hat)" stroke="var(--ink)" stroke-width="1.2"/><text x="${pad+wallW/2}" y="${(g0+8)/2}" text-anchor="middle" transform="rotate(-90 ${pad+wallW/2} ${(g0+8)/2})" fill="var(--mute)">perete</text></g>`;
+ const pY=Math.max(26,g0-62),pH=34,pW=18,tubeB=g0+Math.min(0.3,r.q*0.5)*ky;
+ g+=`<g opacity="${aScene}"><line x1="${sx}" y1="6" x2="${sx}" y2="${pY}" stroke="var(--ink)" stroke-width="2" stroke-dasharray="7 4"/><rect x="${sx-5}" y="${pY+pH}" width="10" height="${tubeB-pY-pH}" fill="var(--panel)" stroke="var(--ink)" stroke-width="1"/><rect x="${sx-pW/2}" y="${pY}" width="${pW}" height="${pH}" rx="2" fill="url(#stl)" stroke="var(--ink)" stroke-width="1.2"/><line x1="${sx-pW/2}" y1="${pY+pH/2}" x2="${sx+pW/2}" y2="${pY+pH/2}" stroke="var(--ink)" stroke-width=".8"/>`;
+ g+=[pY+7,pY+pH-7].map(y=>`<circle cx="${sx}" cy="${y}" r="2.4" fill="var(--panel)" stroke="var(--ink)" stroke-width=".9"/>`).join('')+'</g>';
+ const sw=Math.max(3,Math.min(5,W/220)),p1=eo(ph(t,0.8,tS)),vy=(pY+pH)+(ys-(pY+pH))*p1;
+ g+=`<line x1="${sx}" y1="${pY+pH}" x2="${sx}" y2="${vy}" stroke="var(--strip)" stroke-width="${sw}" stroke-linecap="round"/>`;
+ const ew=Math.max(7,Math.min(12,W/110)),tip=Math.min(16,(ye-ys)*0.12);
+ let hx=sx;const dims=[];
+ for(let i=0;i<k;i++){
+  const s0=tS+i*step,x=xs[i],xp=i?xs[i-1]:sx,ps=eo(ph(t,s0,s0+0.55));
+  if(ps>0)hx=xp+(x-xp)*ps;
+  const pe=drive(ph(t,s0+0.35,s0+1.25));
+  if(t>=s0+0.35){const off=(1-pe)*(ys-g0+(ye-ys)*0.9+30),y1=ys-off,y2=ye-off;
+   g+=`<path d="M${x-ew/2} ${y1} h${ew} v${y2-y1-tip} l${-ew/2} ${tip} l${-ew/2} ${-tip} z" fill="url(#stl)" stroke="var(--ink)" stroke-width="1.1"/><line x1="${x}" y1="${y1+4}" x2="${x}" y2="${y2-tip}" stroke="var(--ink)" stroke-width=".5" opacity=".35"/>`;
+   g+=`<rect x="${x-ew/2-9}" y="${y1+2}" width="9" height="${Math.min(18,(ye-ys)*0.15)}" fill="url(#stl)" stroke="var(--ink)" stroke-width=".9"/><circle cx="${x-ew/2-4.5}" cy="${y1+7}" r="1.6" fill="var(--ink)"/>`;
+   if(pe<1&&pe>0)g+=`<path d="M${x-14} ${y1-8} h28" stroke="var(--mute)" stroke-width="2" stroke-linecap="round"/><path d="M${x-9} ${y1-14} h18" stroke="var(--mute)" stroke-width="1.5" stroke-linecap="round" opacity=".6"/>`}
+  dims.push([xp,x,ph(t,s0+0.55,s0+0.95)])}
+ if(brk){const pb=ph(t,tE,tE+0.6),xl=xs[k-1],xb=xl+seg*0.42*pb;
+  g+=`<line x1="${xl}" y1="${ys}" x2="${xb}" y2="${ys}" stroke="var(--strip)" stroke-width="${sw}" stroke-dasharray="6 5" opacity="${pb}"/><text x="${xl+seg*0.22}" y="${ys-10}" text-anchor="middle" opacity="${pb}">${narrow?'…':'… până la '+r.n+' el.'}</text>`}
+ if(p1>=1)g+=`<line x1="${sx}" y1="${ys}" x2="${hx}" y2="${ys}" stroke="var(--strip)" stroke-width="${sw}" stroke-linecap="round"/>`;
+ const dy=ye+30;
+ for(const[a,b,al] of dims)if(al>0){
+  g+=`<g opacity="${al}" stroke="var(--mute)" stroke-width=".8"><line x1="${a}" y1="${a===sx?ys+6:ye+4}" x2="${a}" y2="${dy+5}"/><line x1="${b}" y1="${ye+4}" x2="${b}" y2="${dy+5}"/></g>`+dimH(a,b,dy,(b-a)<90?f(r.e):'e = '+f(r.e)+' m',al)}
+ const aD=ph(t,tE,tE+0.8),xl=xs[k-1],dx=xl+(brk?seg*0.5:26);
+ g+=`<g opacity="${aD}" stroke="var(--mute)" stroke-width=".8"><line x1="${xl+ew}" y1="${ys}" x2="${dx+4}" y2="${ys}"/><line x1="${xl+ew}" y1="${ye}" x2="${dx+4}" y2="${ye}"/></g>`;
+ g+=dimV(dx,g0,ys,'q = '+f(r.q),aD)+dimV(dx,ys,ye,'l = '+f(r.l),aD);
+ const lx=Math.min(dx+22,W-52);
+ g+=level(lx,g0,'±0,00',aD)+level(lx,ys,'−'+f(r.q),aD)+level(lx,ye,'−'+f(r.q+r.l),aD);
+ const aL=ph(t,tE+0.8,tE+1.6);
+ const lab=(x1,y1,x2,y2,txt)=>`<g opacity="${aL}"><line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="var(--ink)" stroke-width=".8"/><circle cx="${x1}" cy="${y1}" r="2" fill="var(--ink)"/><text x="${x2+4}" y="${y2+4}">${txt}</text></g>`;
+ g+=lab(sx+pW/2,pY+pH/2,sx+pW/2+26,pY+8,'Piesă de separație');
+ g+=lab(sx+5,(g0+tubeB)/2,sx+42,g0-14,narrow?'Țeavă protecție':'Țeavă de protecție');
+ g+=`<text opacity="${aL}" x="${sx+8}" y="18">${narrow?'Coborâre':'Conductor de coborâre (paratrăsnet)'}</text>`;
+ const bx=(sx+xs[0])/2;
+ g+=lab(bx,ys,bx+18,ys-26,narrow?`OL-Zn ${f(r.b*1000,0)}×4`:`Oțel lat OL-Zn ${f(r.b*1000,0)}×4 mm`);
+ const ey1=ys+(ye-ys)*0.45;
+ g+=lab(xs[0]+ew/2,ey1,xs[0]+ew/2+24,ey1-18,narrow?`Țeavă Ø${f(r.d*1000,0)}`:`Țeavă OL-Zn Ø${f(r.d*1000,0)} mm, l = ${f(r.l)} m`);
+ const aR=ph(t,tE+1.6,tE+2.4),ok=r.RPP<=+st.radm,rw=narrow?150:200,rx=W-rw-12;
+ g+=`<g opacity="${aR}"><rect x="${rx}" y="12" width="${rw}" height="${narrow?52:58}" rx="8" fill="${ok?'var(--ok)':'var(--bad)'}" stroke="${ok?'var(--okink)':'var(--badink)'}" stroke-width="1"/><text x="${rx+12}" y="34" style="stroke:none;font-weight:600">n = ${r.n} electrozi</text><text x="${rx+12}" y="${narrow?54:56}" style="stroke:none;font-size:${narrow?15:17}px;font-weight:600">RPP = ${f(r.RPP)} Ω ${ok?'≤':'>'} ${st.radm} Ω</text></g>`;
+ return{g,total};
+}
+function drawA(){const W=asv.clientWidth,H=asv.clientHeight;if(!W||!H||!R)return;
+ const o=sectMarkup(W,H,A.t);A.total=o.total;asv.innerHTML=o.g;$('aBar').style.width=(100*cl(A.t/A.total))+'%'}
+function loop(ts){
+ if(A.play)A.t+=A.last?Math.min(0.05,(ts-A.last)/1000):0;
+ A.last=ts;drawA();
+ if(A.t<A.total&&A.play)A.raf=requestAnimationFrame(loop);
+ else{A.raf=0;A.last=0;if(A.t>=A.total){A.play=false;$('aPlay').textContent='Redă'}}
+}
+function startA(){cancelAnimationFrame(A.raf);A.last=0;A.play=true;$('aPlay').textContent='Pauză';A.raf=requestAnimationFrame(loop)}
+$('aRe').addEventListener('click',()=>{A.t=0;startA()});
+$('aPlay').addEventListener('click',()=>{if(A.play){A.play=false;$('aPlay').textContent='Redă'}else{if(A.t>=A.total)A.t=0;startA()}});
+
+// ===== breviar =====
+const svgWrap=(W,H,inner)=>`<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" style="--panel:#fff;--ink:#1d2733;--mute:#5b6878;--soil:#d6c4a2;--strip:#3f78c4;--peach2:#f2a785;--blue2:#9ebde8;--sky2:#9ebde8;--blue:#e2ecfb;--mint:#dcf2e7;--ok:#d3f0de;--okink:#1e6a43;--bad:#fbd9df;--badink:#a02c43">${inner}</svg>`;
+function facTable(){return [1,2,3].map(a=>`<table><thead><tr><th>a = ${a===1?'':a}l · n</th>${NS.map(n=>`<th>${n}</th>`).join('')}</tr></thead><tbody>${[['lv','Linie, u1 vert.'],['lo','Linie, u2 oriz.'],['cv','Contur, u1 vert.'],['co','Contur, u2 oriz.']].map(([k,t])=>`<tr><td>${t}</td>${U[a][k].map(v=>`<td>${v==null?'–':v.toFixed(2)}</td>`).join('')}</tr>`).join('')}</tbody></table>`).join('<div style="height:8px"></div>')}
+function buildReport(){
+ const r=R,ok=valid(r),adm=+st.radm,col=REP.col,f=fmt;
+ const ci=col?' class="vi"':'';
+ const tabU=S&&+r.uv===S.uv&&+r.uo===S.uo;const uNote=tabU?' <span style="color:#555">(tabel A5.34-5)</span>':' <span style="color:#555">(adoptat de proiectant)</span>';
+ const P=[];let num=0;const H2=t=>`<h2>${++num}. ${t}</h2>`;
+ const parts={
+  antet:()=>`<table class="ct"><tr><td colspan="2"><b>Beneficiar</b>${esc(st.hBen)||'&nbsp;'}</td><td colspan="2"><b>Adresa</b>${esc(st.hAdr)||'&nbsp;'}</td></tr><tr><td colspan="2"><b>Proiectant</b>${esc(st.hPro)||'&nbsp;'}</td><td><b>Nr. Proiect</b>${esc(st.hNr)||'&nbsp;'}</td><td><b>Faza</b>${esc(st.hFaza)||'&nbsp;'}${st.hData?' · '+esc(st.hData.split('-').reverse().join('.')):''}</td></tr></table>`,
+  desc1:()=>H2('Paratrăsnetul')+`<p>${esc(st.t1)}</p>`,
+  desc2:()=>H2('Instalația de protecție la atingere')+`<p>${esc(st.t2)}</p>`,
+  date:()=>{const fld=(lab,sym,val,u,inp=true)=>`<div class="ff"><div class="fl"><span>${lab}</span><i>${sym}</i></div><div class="fv${inp&&col?' vi':''}"><span>${val}</span><em>${u}</em></div></div>`;
+   const grp=(t,items,note='')=>`<div class="fgrp"><h4>${t}</h4><div class="fg">${items.join('')}</div>${note?`<div class="lg">${note}</div>`:''}</div>`;
+   const N=x=>esc(nstr(x));
+   return H2('Date de intrare')+`<div class="fform">`+
+   grp('Geometria prizei',[fld('Perimetrul prizei','P',N(r.P),'m'),fld('Distanța între electrozi','e',N(r.e),'m'),fld('Adâncimea de îngropare','q',N(r.q),'m')])+
+   grp('Solul',[fld('Rezistivitatea solului','ρ',N(r.rho),'Ω·m')])+
+   grp('Electrozi verticali (țeavă)',[fld('Lungimea electrodului','l',N(r.l),'m'),fld('Diametrul exterior','d',N(r.d*1000),'mm')])+
+   grp('Electrod orizontal (bandă OLZn)',[fld('Lățimea benzii','b',N(r.b*1000),'mm'),fld('Rezistența admisă','R<sub>adm</sub>',adm+' Ω',`${adm===1?'priză comună cu paratrăsnetul':adm===4?'instalație de protecție':'paratrăsnet separat'}`,false)])+
+   grp('Factori de utilizare',[fld('Priza verticală','u<sub>v</sub>',N(r.uv),''),fld('Priza orizontală','u<sub>o</sub>',N(r.uo),'')],tabU&&S?'Valori din tabelul A5.34-5 (I7-2011): '+esc(suggInfo(r.n,r.al,st.lay)):'Valori adoptate de proiectant.')+
+   `</div>`},
+  calc:()=>H2('Calculul prizei de pământ (I7-2011, Anexa 5.34)')+(ok?'':'<p>Datele de calcul sunt incomplete.</p>')+STEPS.map(s=>{const o=r.steps[s.id],mod=FX[s.id]!=null&&FX[s.id]!==s.ex;
+   return `<div class="st"><h3>${s.t} – ${s.name}${mod?' <span style="font-weight:500;color:#a02c43">(formulă modificată de proiectant)</span>':''}</h3>${REP.fx&&o.ast?`<div class="eqline">${eqHTML(r,s,false)}</div><div class="eqline">${eqHTML(r,s,true)}</div>`:`<div class="eqline">${M(mvar(s.id)+'<mo>=</mo>'+mnum(o.v,'vc')+`<mspace width=".3em"></mspace><mi mathvariant="normal">${esc(s.u)}</mi>`)}</div>`}${s.extra&&REP.fx?`<div class="lg">${s.extra}</div>`:''}</div>`}).join(''),
+  concl:()=>`<div class="blk">`+H2('Concluzie')+`<div class="concl">${ok?`Rezistența de dispersie a prizei de pământ R<sub>PP</sub> = ${f(r.RPP,2)} Ω ${r.RPP<=adm?'≤':'>'} R<sub>adm</sub> = ${adm} Ω, deci priza ${r.RPP<=adm?'corespunde':'NU corespunde'}. Se vor monta ${r.n} electrozi verticali din țeavă OL-Zn Ø${f(r.d*1000,0)} mm, l = ${f(r.l,2)} m, la distanța e = ${f(r.e,2)} m, legați cu bandă OL-Zn ${f(r.b*1000,0)}×4 mm îngropată la ${f(r.q,2)} m.`:'Datele de calcul sunt incomplete.'}</div><p class="lg">După execuție, valoarea rezistenței de dispersie se verifică prin măsurători.</p></div>`,
+  plan:()=>`<div class="blk">${H2('Schița în plan')}${svgWrap(700,330,planMarkup(700,330))}</div>`,
+  sect:()=>`<div class="blk">${H2('Secțiune prin priza de pământ')}${svgWrap(1000,470,sectMarkup(1000,470,999).g)}</div>`,
+  tab:()=>H2('Factori de utilizare – tabel A5.34-5 (I7-2011)')+facTable()};
+ P.push('<h1>BREVIAR DE CALCUL – PRIZĂ DE PĂMÂNT</h1>');
+ for(const id of REP.order)if(REP.on[id]&&parts[id])P.push(parts[id]());
+ if(col)P.push('<p class="lg"><span style="background:#fff8de;padding:0 6px">valori introduse</span> <span style="background:#efeafc;padding:0 6px">valori calculate</span></p>');
+ return P.join('');
+}
+function renderSecl(){
+ $('secl').innerHTML=REP.order.map((id,i)=>{const s=SECS.find(x=>x[0]===id);return `<li><label><input type="checkbox" data-on="${id}"${REP.on[id]?' checked':''}>${s[1]}</label><button type="button" data-mv="${i}" data-d="-1" aria-label="Mută în sus"${i===0?' disabled':''}>↑</button><button type="button" data-mv="${i}" data-d="1" aria-label="Mută în jos"${i===REP.order.length-1?' disabled':''}>↓</button></li>`}).join('');
+ $('oFx').checked=REP.fx;$('oCol').checked=REP.col;
+}
+function preview(){$('rpv').innerHTML=buildReport()}
+$('secl').addEventListener('change',e=>{const id=e.target.dataset.on;if(id){REP.on[id]=e.target.checked;save('pp-rep',REP);preview()}});
+$('secl').addEventListener('click',e=>{const b=e.target.closest('[data-mv]');if(!b)return;const i=+b.dataset.mv,d=+b.dataset.d,j=i+d;
+ [REP.order[i],REP.order[j]]=[REP.order[j],REP.order[i]];save('pp-rep',REP);renderSecl();preview();
+ const nb=$('secl').querySelector(`[data-mv="${j}"][data-d="${d}"]`);(nb&&!nb.disabled?nb:$('secl').querySelector(`[data-mv="${j}"]:not([disabled])`))?.focus()});
+$('oFx').addEventListener('change',e=>{REP.fx=e.target.checked;save('pp-rep',REP);preview()});
+$('oCol').addEventListener('change',e=>{REP.col=e.target.checked;save('pp-rep',REP);preview()});
+$('bPrint').addEventListener('click',()=>{renderSecl();preview();$('dlg').showModal()});
+$('bDlgClose').addEventListener('click',()=>$('dlg').close());
+let DL=null;
+$('prNote').textContent='Dacă fereastra de tipărire nu apare, deschide aplicația direct în browser.';
+if(window.claude&&window.claude.use){window.claude.use('downloads').then(d=>{if(d)DL=d}).catch(()=>{})}
+$('prNote').textContent='„Descarcă PDF” generează direct fișierul PDF, pe format A4, cu secțiunile bifate și în ordinea aleasă.';
+let jsPdfP=null,fontCss=null;
+function loadJsPDF(){if(window.jspdf)return Promise.resolve();if(!jsPdfP)jsPdfP=new Promise((ok,ko)=>{const sc=document.createElement('script');sc.src='jspdf.umd.min.js';sc.onload=ok;sc.onerror=()=>{jsPdfP=null;ko(new Error('jspdf'))};document.head.appendChild(sc)});return jsPdfP}
+async function getFonts(){if(fontCss!==null)return fontCss;try{const r=await fetch('pdf-fonts.css');fontCss=r.ok?await r.text():''}catch(_){fontCss=''}return fontCss}
+const PW=794,PH=1123,MG=46,CW=PW-2*MG,CH=PH-2*MG-34;
+function pdfName(){return `Breviar priza de pamant${st.hNr?' '+st.hNr.replace(/[^\w\- ]/g,''):''}.pdf`}
+async function makePDF(){
+ await loadJsPDF();const fonts=await getFonts();
+ const host=document.createElement('div');host.className='rp';host.style.cssText=`position:fixed;left:-30000px;top:0;width:${CW}px;background:#fff`;
+ host.innerHTML=buildReport();document.body.appendChild(host);
+ try{
+  if(document.fonts&&document.fonts.ready)await document.fonts.ready;
+  const kids=[...host.children],hOf=el=>{const c=getComputedStyle(el);return el.offsetHeight+parseFloat(c.marginTop)+parseFloat(c.marginBottom)};
+  const pages=[];let cur=[],used=0;
+  for(let i=0;i<kids.length;i++){const el=kids[i],h=hOf(el),need=h+(el.tagName==='H2'&&kids[i+1]?hOf(kids[i+1]):0);
+   if(cur.length&&used+need>CH){pages.push(cur);cur=[];used=0}cur.push(el);used+=h}
+  if(cur.length)pages.push(cur);
+  const css=$('mainCss').textContent+'\n'+fonts,ser=new XMLSerializer(),S=2;
+  const {jsPDF}=window.jspdf;const pdf=new jsPDF({unit:'mm',format:'a4',orientation:'portrait',compress:true});
+  for(let p=0;p<pages.length;p++){
+   const html=pages[p].map(el=>ser.serializeToString(el)).join('');
+   const svgS=`<svg xmlns="http://www.w3.org/2000/svg" width="${PW*S}" height="${PH*S}" viewBox="0 0 ${PW} ${PH}"><defs><style type="text/css"><![CDATA[${css}]]></style></defs><foreignObject x="0" y="0" width="${PW}" height="${PH}"><div xmlns="http://www.w3.org/1999/xhtml" style="width:${PW}px;height:${PH}px;background:#fff;box-sizing:border-box;padding:${MG}px;position:relative;overflow:hidden"><div class="rp" style="width:${CW}px">${html}</div><div style="position:absolute;bottom:24px;left:${MG}px;right:${MG}px;display:flex;justify-content:space-between;font:11px Barlow,Arial,sans-serif;color:#666;border-top:1px solid #ccc;padding-top:4px"><span>${esc(st.hNr?'Proiect nr. '+st.hNr:'Breviar de calcul – priză de pământ')}</span><span>Pagina ${p+1} / ${pages.length}</span></div></div></foreignObject></svg>`;
+   const img=new Image();img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svgS);
+   const ld=im=>im.decode?im.decode():new Promise((ok,ko)=>{im.onload=ok;im.onerror=ko});
+   await ld(img);await new Promise(r=>setTimeout(r,p?150:600));
+   const img2=new Image();img2.src=img.src;await ld(img2);await new Promise(r=>setTimeout(r,120));
+   const cv=document.createElement('canvas');cv.width=PW*S;cv.height=PH*S;const cx=cv.getContext('2d');cx.fillStyle='#fff';cx.fillRect(0,0,cv.width,cv.height);cx.drawImage(img2,0,0,cv.width,cv.height);
+   if(p)pdf.addPage();pdf.addImage(cv.toDataURL('image/jpeg',0.92),'JPEG',0,0,210,297,undefined,'FAST');
+  }
+  return pdf;
+ }finally{host.remove()}
+}
+let pdfBusy=false;
+$('bDl').addEventListener('click',async()=>{if(pdfBusy)return;pdfBusy=true;const b=$('bDl'),old=b.textContent;b.textContent='Se generează PDF-ul…';b.disabled=true;
+ try{const pdf=await makePDF();window.__lastPdf=pdf;
+  if(DL){try{await DL.save({filename:pdfName(),data:pdf.output('blob')});toast('PDF-ul a fost descărcat')}catch(e){toast(e&&e.code==='declined'?'Descărcare anulată':'Descărcarea nu este disponibilă aici')}}
+  else{pdf.save(pdfName());toast('PDF-ul a fost descărcat')}}
+ catch(e){console.error(e);toast('Nu am putut genera PDF-ul în acest browser. Folosește „Printează” → Salvează ca PDF.')}
+ finally{pdfBusy=false;b.textContent=old;b.disabled=false}});
+$('bDoPrint').addEventListener('click',()=>{$('report').innerHTML=buildReport();try{window.print()}catch(_){toast('Tipărirea nu este permisă aici')}});
+window.addEventListener('beforeprint',()=>{$('report').innerHTML=buildReport()});
+
+// ===== diverse =====
+function toast(t){const el=$('toast');el.textContent=t;el.classList.add('on');setTimeout(()=>el.classList.remove('on'),2200)}
+function memo(){const r=R,adm=+st.radm,f=(x,k=3)=>fmt(x,k);
+ return ['BREVIAR DE CALCUL – PRIZĂ DE PĂMÂNT',`Beneficiar: ${st.hBen}`,`Adresa: ${st.hAdr}`,`Proiectant: ${st.hPro}`,`Nr. Proiect: ${st.hNr}`,`Faza: ${st.hFaza}`,'',
+ '1) Paratrăsnetul',st.t1,'','2) Instalația de protecție la atingere',st.t2,'',
+ `Date: P = ${f(r.P,2)} m; e = ${f(r.e,2)} m; ρ = ${f(r.rho,2)} Ω·m; l = ${f(r.l,2)} m; d = ${f(r.d,3)} m; b = ${f(r.b,3)} m; q = ${f(r.q,2)} m; uv = ${f(r.uv,2)}; uo = ${f(r.uo,2)}`,
+ ...STEPS.map(s=>`${s.t} - ${s.name}: ${s.id} = ${FX[s.id]??s.ex} = ${f(r.steps[s.id].v,s.dec)} ${s.u}`),
+ `Concluzie: RPP = ${f(r.RPP)} Ω ${r.RPP<=adm?'≤':'>'} ${adm} Ω (${r.RPP<=adm?'corespunde':'nu corespunde'})`].join('\n')}
+$('bCopy').addEventListener('click',async()=>{try{await navigator.clipboard.writeText(memo());toast('Textul breviarului a fost copiat')}catch(_){toast('Copierea nu este permisă aici')}});
+$('bReset').addEventListener('click',()=>{const keep={};for(const k of KEYS)if(k[0]==='h')keep[k]=st[k];st=Object.assign({},DEF,keep);fill();read();render();toast('Datele de calcul au fost resetate')});
+$('bFxReset').addEventListener('click',()=>{FX={};save('pp-fx',FX);for(const s of STEPS)$('fx-'+s.id).value=s.ex;render();toast('Formulele au revenit la cele din normativ')});
+$('steps').addEventListener('click',e=>{const id=e.target.dataset.rs;if(id){delete FX[id];save('pp-fx',FX);$('fx-'+id).value=STEPS.find(s=>s.id===id).ex;render()}});
+$('bOpen').addEventListener('click',()=>document.querySelectorAll('details.step').forEach(d=>d.open=true));
+$('bClose').addEventListener('click',()=>document.querySelectorAll('details.step').forEach(d=>d.open=false));
+$('bSugg').addEventListener('click',()=>{if(!S)return;$('uv').value=S.uv;$('uo').value=S.uo;read();render()});
+$('uAuto').addEventListener('change',()=>{read();render()});
+$('soil').addEventListener('change',e=>{const i=e.target.value;if(i!==''){$('rho').value=SOILS[i][1];read();render()}});
+document.addEventListener('input',e=>{const t=e.target;
+ if(t.classList.contains('fx')){const s=STEPS.find(x=>x.id===t.dataset.id);const v=t.value.trim();if(v===s.ex)delete FX[s.id];else FX[s.id]=v;save('pp-fx',FX);render();return}
+ if(t.id==='uv'||t.id==='uo'){$('uAuto').checked=false}
+ if(t.id&&KEYS.includes(t.id)){read();if('h' in t.dataset){if($('dlg').open)preview()}else render()}});
+$('lay').addEventListener('change',()=>{read();render()});$('radm').addEventListener('change',()=>{read();render()});
+$('frm').addEventListener('submit',e=>e.preventDefault());
+$('tbl').innerHTML=facTable();
+
+fill();render();
+const ro=new ResizeObserver(draw);ro.observe($('fig'));
+const roA=new ResizeObserver(drawA);roA.observe($('afig'));
+if(reduce){A.t=999;A.play=false;$('aPlay').textContent='Redă';drawA()}
+else{const io=new IntersectionObserver(es=>{if(es.some(x=>x.isIntersecting)){io.disconnect();A.t=0;startA()}},{threshold:.3});io.observe($('afig'))}
+}
+</script>
+</body>
+</html>
