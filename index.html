@@ -144,34 +144,34 @@ dialog::backdrop{background:rgba(20,28,40,.45)}
 .rp p{margin:0 0 8px;text-align:justify}
 .rp table{font-size:13px}
 .rp th,.rp td{border:1px solid #9aa;padding:4px 7px;white-space:normal}
-.rp th{background:#eef6f1}
+.rp th{background:#f2f2f2}
 .rp .ct td{text-align:left}.rp .ct td b{display:block;font-size:11px;color:#555;font-weight:500}
 .rp td.vi{background:#fff8de}.rp td.vc{background:#efeafc;font-weight:600}
 .rp .st{margin:0 0 10px;break-inside:avoid}
 .rp .st h3{font-size:14px;margin:0 0 2px}
 .rp .st .eqline{font-size:15px;padding:2px 0;overflow:visible}
 .rp h2{break-after:avoid}
-.rp .fform{display:grid;gap:12px;background:#d5f0df;border:1px solid #9fd6b7;border-radius:10px;padding:14px 16px}
+.rp .fform{display:grid;gap:12px;background:#fff;border:1px solid #9aa4ae;border-radius:10px;padding:14px 16px}
 .rp .fgrp{break-inside:avoid}
 .rp .fgrp h4{font:600 15px "Barlow Semi Condensed",Barlow,sans-serif;margin:0 0 6px;color:#1d2733}
 .rp .fg{display:grid;grid-template-columns:1fr 1fr;gap:8px 14px;align-items:start}
 .rp .fl{display:flex;justify-content:space-between;gap:8px;font:500 13.5px "Barlow Semi Condensed",Barlow,sans-serif;margin-bottom:3px;color:#1d2733}
 .rp .fl i{font-style:normal;color:#5b6878}
-.rp .fv{display:flex;justify-content:space-between;align-items:center;gap:8px;border:1px solid #9fd6b7;border-radius:7px;padding:6px 10px;min-height:34px;font:15px "IBM Plex Mono",monospace;background:#fff;color:#1d2733}
-.rp .fv.vi{background:#fff5d6;border-color:#ead08a}
+.rp .fv{display:flex;justify-content:space-between;align-items:center;gap:8px;border:1px solid #9aa4ae;border-radius:7px;padding:6px 10px;min-height:34px;font:15px "IBM Plex Mono",monospace;background:#fff;color:#1d2733}
+.rp .fv.vi{background:#fff;border-color:#9aa4ae}
 .rp .fv.fs{font-family:Barlow,sans-serif}
 .rp .fv em{font:12.5px Barlow,sans-serif;font-style:normal;color:#5b6878;text-align:right}
 .rp .fh{font-size:12px;color:#5b6878;margin-top:2px}
 .rp .fck{display:flex;align-items:center;gap:8px;font:500 14px "Barlow Semi Condensed",Barlow,sans-serif;margin:10px 0 6px}
-.rp .cb{width:16px;height:16px;border-radius:3px;background:#5579b0;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:12px;line-height:1}
+.rp .cb{width:16px;height:16px;border-radius:3px;background:#fff;color:#111;border:1px solid #333;display:inline-flex;align-items:center;justify-content:center;font-size:12px;line-height:1}
 .rp .cb.off{background:#fff;border:1px solid #7a8794}
-.rp .fsug{background:#ffe1d2;border-radius:7px;padding:8px 12px;font-size:13px;line-height:1.5}
+.rp .fsug{background:#fff;border:1px solid #9aa4ae;border-radius:7px;padding:8px 12px;font-size:13px;line-height:1.5}
 .rp .concl{border:1.5px solid #111;padding:8px 12px;margin-top:6px;font-weight:600}
 .rp svg{width:100%;height:auto;display:block;border:1px solid #ccd}
 .rp svg text{font-size:13px;stroke:#fff}
 .rp .lg{font-size:12px;color:#555;margin:4px 0 0}
 .rp .blk{break-inside:avoid;margin-bottom:6px}
-.rp mn.vi{color:#7a5a00}.rp mn.vc{color:#4a3790}
+.rp mn.vi,.rp mn.vc{color:#111}
 @media print{@page{size:A4;margin:14mm 14mm 16mm}body>*:not(#report){display:none!important}#report{display:block}body{background:#fff}*{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
 @media(max-width:900px){.grid{grid-template-columns:minmax(0,1fr)}.res{position:static;order:-1}.desc{grid-template-columns:minmax(0,1fr)}.dlg{grid-template-columns:minmax(0,1fr);height:auto}.dside{border-right:0;border-bottom:1px solid var(--line)}.dpre{max-height:70vh}}
 @media(max-width:720px){.cartus{grid-template-columns:repeat(2,minmax(0,1fr))}.c.w3,.c.w1{grid-column:span 1}.c.full{grid-column:1/-1}details.step>summary{grid-template-columns:minmax(0,1fr) auto}.step .chev,.step .sumeq:empty{display:none}.paper{padding:22px 18px}}
@@ -300,7 +300,6 @@ dialog::backdrop{background:rgba(20,28,40,.45)}
    <p class="note" style="margin:0">Bifează ce apare în breviar și schimbă ordinea cu săgețile. Previzualizarea se actualizează imediat.</p>
    <ul class="secl" id="secl"></ul>
    <label class="opt"><input type="checkbox" id="oFx"> Formulele și înlocuirile numerice</label>
-   <label class="opt"><input type="checkbox" id="oCol"> Culori pentru introdus / calculat</label>
    <div class="actions" style="flex-direction:column">
     <button type="button" class="pri" id="bDl">Descarcă PDF</button>
     <button type="button" id="bDoPrint">Printează</button>
@@ -578,7 +577,7 @@ $('aPlay').addEventListener('click',()=>{if(A.play){A.play=false;$('aPlay').text
 const svgWrap=(W,H,inner)=>`<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" style="--panel:#fff;--ink:#1d2733;--mute:#5b6878;--soil:#d6c4a2;--strip:#3f78c4;--peach2:#f2a785;--blue2:#9ebde8;--sky2:#9ebde8;--blue:#e2ecfb;--mint:#dcf2e7;--ok:#d3f0de;--okink:#1e6a43;--bad:#fbd9df;--badink:#a02c43">${inner}</svg>`;
 function facTable(){return [1,2,3].map(a=>`<table><thead><tr><th>a = ${a===1?'':a}l · n</th>${NS.map(n=>`<th>${n}</th>`).join('')}</tr></thead><tbody>${[['lv','Linie, u1 vert.'],['lo','Linie, u2 oriz.'],['cv','Contur, u1 vert.'],['co','Contur, u2 oriz.']].map(([k,t])=>`<tr><td>${t}</td>${U[a][k].map(v=>`<td>${v==null?'–':v.toFixed(2)}</td>`).join('')}</tr>`).join('')}</tbody></table>`).join('<div style="height:8px"></div>')}
 function buildReport(){
- const r=R,ok=valid(r),adm=+st.radm,col=REP.col,f=fmt;
+ const r=R,ok=valid(r),adm=+st.radm,col=false,f=fmt;
  const ci=col?' class="vi"':'';
  const tabU=S&&+r.uv===S.uv&&+r.uo===S.uo;const uNote=tabU?' <span style="color:#555">(tabel A5.34-5)</span>':' <span style="color:#555">(adoptat de proiectant)</span>';
  const P=[];let num=0;const H2=t=>`<h2>${++num}. ${t}</h2>`;
@@ -612,7 +611,7 @@ function buildReport(){
 }
 function renderSecl(){
  $('secl').innerHTML=REP.order.map((id,i)=>{const s=SECS.find(x=>x[0]===id);return `<li><label><input type="checkbox" data-on="${id}"${REP.on[id]?' checked':''}>${s[1]}</label><button type="button" data-mv="${i}" data-d="-1" aria-label="Mută în sus"${i===0?' disabled':''}>↑</button><button type="button" data-mv="${i}" data-d="1" aria-label="Mută în jos"${i===REP.order.length-1?' disabled':''}>↓</button></li>`}).join('');
- $('oFx').checked=REP.fx;$('oCol').checked=REP.col;
+ $('oFx').checked=REP.fx;
 }
 function preview(){$('rpv').innerHTML=buildReport()}
 $('secl').addEventListener('change',e=>{const id=e.target.dataset.on;if(id){REP.on[id]=e.target.checked;save('pp-rep',REP);preview()}});
@@ -620,7 +619,6 @@ $('secl').addEventListener('click',e=>{const b=e.target.closest('[data-mv]');if(
  [REP.order[i],REP.order[j]]=[REP.order[j],REP.order[i]];save('pp-rep',REP);renderSecl();preview();
  const nb=$('secl').querySelector(`[data-mv="${j}"][data-d="${d}"]`);(nb&&!nb.disabled?nb:$('secl').querySelector(`[data-mv="${j}"]:not([disabled])`))?.focus()});
 $('oFx').addEventListener('change',e=>{REP.fx=e.target.checked;save('pp-rep',REP);preview()});
-$('oCol').addEventListener('change',e=>{REP.col=e.target.checked;save('pp-rep',REP);preview()});
 $('bPrint').addEventListener('click',()=>{renderSecl();preview();$('dlg').showModal()});
 $('bDlgClose').addEventListener('click',()=>$('dlg').close());
 let DL=null;
